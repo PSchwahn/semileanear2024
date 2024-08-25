@@ -1,7 +1,7 @@
 import Semileanear2024.testproject.letsgo
 
 /-!
-# Semileanear 2024
+# SemiLƎⱯNear 2024
 
 This is the master file where all the finished and unfinished projects may be showcased.
 
