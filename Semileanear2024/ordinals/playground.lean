@@ -1,4 +1,4 @@
-import Mathlib
+import Semileanear2024.ordinals.wellorder
 
 /- Exercises:
  Define well-orders on {}, Fin 1, Fin 2, Fin n, Nat, and omega+1
@@ -10,6 +10,10 @@ variable (n : ℕ)
 #check Empty
 #check Fin n
 #check ℕ
+
+open Semileanear2024
+
+#check NatAndAnother
 
 def WellOrderOnEmpty : WellOrder :=
 {
@@ -48,7 +52,7 @@ def WellOrderOmega : WellOrder :=
 
 def WellOrderOmegaPlus1 : WellOrder :=
 {
-  α := sorry
+  α := NatAndAnother
   r := sorry
   wo := sorry
 }
