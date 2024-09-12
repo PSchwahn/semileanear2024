@@ -24,8 +24,6 @@ POSSIBLE DEFINITIONS:
  the relation <, so we kind of have a circle argument.
 -/
 
-namespace Semileanear
-
 variable (α : Type)
 
 --lean version of Nat is just an inductive type:
@@ -56,5 +54,3 @@ inductive ourNat where
 #check Ordinal.partialOrder
 #check Ordinal.induction
 --use induction tactic with ordinals?
-
-end Semileanear
