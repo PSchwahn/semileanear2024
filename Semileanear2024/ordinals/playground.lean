@@ -57,4 +57,6 @@ def WellOrderOmegaPlus1 : WellOrder :=
   wo := sorry
 }
 
-#check Ordinal.type WellOrderOnEmpty.r
+def omega := Ordinal.type WellOrderOmega.r
+
+example : Ordinal.type WellOrderOmegaPlus1.r = omega + 1 := sorry

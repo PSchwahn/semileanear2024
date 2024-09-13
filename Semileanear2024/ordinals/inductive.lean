@@ -36,10 +36,16 @@ def add (m n : ourNat) : ourNat :=
 
 #eval add (succ (succ zero)) (succ zero)
 
--- limit ordinal: hard to define. need < relation and ordinal-indexed sequence
--- inductive types, induction principle/tactic for Nat, then transfinite induction?
+-- let's do another inductive type: the underlying type for omega + 1
 
---this will be the underlying type for omega + 1:
+/-
+inductive NatAndAnother' where
+  | zero : NatAndAnother'
+  | another : NatAndAnother'
+  | succ (x : NatAndAnother') (xhassucc : x ≠ another) : NatAndAnother'
+-/
+--positivity assumption violated!
+
 inductive NatAndAnother where
   | natural (n : ℕ) : NatAndAnother
   | another : NatAndAnother
@@ -56,13 +62,22 @@ inductive NatAndAnother.le (n : NatAndAnother) : NatAndAnother → Prop
   | step {m} (hm : m ≠ another) : le n m → le n (succ m hm)
 --is this right?
 
+@[simp]
+def NatAndAnother.add (x y : NatAndAnother) : NatAndAnother :=
+  match x with
+  | another => another
+  | natural n => match y with
+    | another => another
+    | natural m => natural (n + m)
+
 --induction principle
---why can't we just have one induction? positivity principle?
-example (x : NatAndAnother) : 1 = 1 := by
+
+open NatAndAnother
+
+example (x : NatAndAnother) : NatAndAnother.add x another = another := by
   induction x with
-  | another => sorry
-  | natural n => induction n with
-    | zero => sorry
-    | succ k => sorry
+  | another => rfl
+  | natural n => rfl
+
 
 end Semileanear2024
