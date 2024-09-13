@@ -49,16 +49,24 @@ inductive Z where
 ------------------------------------------------------------------------------
 -- Rational numbers ℚ from Mathlib
 
-def x := (1:ℚ)*4/6
-#check x     -- ℚ
-#eval x      -- (2 : Rat)/3
-#eval x.num  -- 2
-#eval x.den  -- 3
+def x := 4/6 -- that's not a rational!
+#check x  -- ℕ
+#eval x   -- 0
+
+def y := (1:ℚ)*4/6
+#check y     -- ℚ
+#eval y      -- (2 : Rat)/3
+#eval y.num  -- 2
+#eval y.den  -- 3
+
+------------------------------------------------------------------------------
+-- Cast ℤ to ℚ, conversely check whether a:ℚ is an integer by a.den = 1
 
 def Rat.fraction (a b : Int) := (a:ℚ)/(b:ℚ)
 infixr:70 " /: " => Rat.fraction
-def y := 15/:3
-#check y
-#eval y
-#eval y.num
-#eval y.den
+
+def z := 15/:3
+#check z     -- ℚ
+#eval z      -- 5
+#eval z.num  -- 5
+#eval z.den  -- 1

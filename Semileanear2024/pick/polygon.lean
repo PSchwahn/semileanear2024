@@ -53,24 +53,6 @@ infix:70 " ⬝ " => Point.sprod   -- precedence 70
 #eval p0 × p1  -- -19
 #eval p0 ⬝ p1  -- -9
 
-------------------------------------------------------------------------------
--- Cast ℤ to ℚ, conversely check whether a:ℚ is an integer by a.den = 1
-
-def x := (1:ℚ)*4/6
-#check x     -- ℚ
-#eval x      -- (2 : Rat)/3
-#eval x.num  -- 2
-#eval x.den  -- 3
-
-def Rat.fraction (a b : Int) := (a:ℚ)/(b:ℚ)
-infixl:70 " /: " => Rat.fraction
-
-def y := 15/:3
-#check y
-#eval y
-#eval y.num
-#eval y.den
-
 def Point.isInteger (q: Point) : Bool :=
   q.x.den = 1 ∧ q.y.den = 1
 
@@ -108,12 +90,15 @@ def p : Array Point := #[p0, p1, p2]
 #eval p[2]   -- { x := -1, y := 7 }
 #eval p[(3 : Fin 3)]
 
+------------------------------------------------------------------------------
+-- check whether a polygon is integer, i.e. a lattice polygon
+
 def isInteger (p: Array Point) : Bool :=
   ∀ i : Fin p.size, p[i].x.den = 1 ∧ p[i].y.den = 1
 
 #eval isInteger p  -- true
 
-def q : Array Point := #[p0, p1, p2, ⟨ 5/:2, 3 ⟩]
+def q : Array Point := #[p0, p1, p2, ⟨ (5:ℚ)/2, 3 ⟩]
 
 #eval isInteger q  -- false
 
@@ -124,8 +109,8 @@ def Rat.abs (x : ℚ) : ℚ :=
 if x < 0 then -x else
 x
 
-#eval (42/:5).abs
-#eval (-7/:2).abs
+#eval (42/(5:ℚ)).abs
+#eval (-7/(2:ℚ)).abs
 #eval (0:ℚ).abs
 
 def Rat.sign (x : ℚ) : ℚ :=
