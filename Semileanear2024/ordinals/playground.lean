@@ -22,8 +22,6 @@ instance : IsTrans Empty EmptyRel := sorry
 instance : IsWellFounded Empty EmptyRel := sorry
 instance woEmpty : IsWellOrder Empty EmptyRel where
 
-#check Nat.lt.isWellOrder
-
 def WellOrderOnEmpty : WellOrder :=
 {
   α := Empty
@@ -52,6 +50,7 @@ def WellOrderOnFinite : WellOrder :=
   wo := sorry
 }
 
+--if we wish we can reprove the relevant lemmas.
 instance : IsTrichotomous ℕ Nat.lt := ⟨Nat.lt_trichotomy⟩
 instance : IsTrans ℕ Nat.lt := ⟨@Nat.lt_trans⟩
 instance : IsWellFounded ℕ Nat.lt := ⟨Nat.lt_wfRel.wf⟩
@@ -64,10 +63,17 @@ def WellOrderOmega : WellOrder :=
   wo := woNat
 }
 
+open NatAndAnother
+
+inductive lt (n : NatAndAnother) : NatAndAnother → Prop
+  | aright : lt n another
+  | step {m} (hm : m ≠ another) : lt n m → lt n (succ m hm)
+--is this right?
+
 def WellOrderOmegaPlus1 : WellOrder :=
 {
   α := NatAndAnother
-  r := sorry
+  r := lt
   wo := sorry
 }
 
