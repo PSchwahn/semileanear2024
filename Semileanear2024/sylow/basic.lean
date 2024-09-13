@@ -99,9 +99,9 @@ class MulMemClass (S : Type*) (M : Type*) [Mul M] [SetLike S M] : Prop where
   mul_mem : ∀ {s : S} {a b : M}, a ∈ s → b ∈ s → a ~ b ∈ s
 
 /-- `OneMemClass S M` says `S` is a type of subsets `s ≤ M`, such that `1 ∈ s` for all `s`. -/
-class OneMemClass (S : Type*) (M : Type*) [One M] [SetLike S M] : Prop where
+class OneMemClass (S : Type*) (M : Type*) [instOne : One M] [SetLike S M] : Prop where
   /-- By definition, if we have `OneMemClass S M`, we have `1 ∈ s` for all `s : S`. -/
-  one_mem : ∀ s : S, (one : M) ∈ s
+  one_mem : ∀ s : S, (instOne.one : M) ∈ s
 
 
 /-- `SubmonoidClass S M` says `S` is a type of subsets `s ≤ M` that contain `1`
@@ -129,9 +129,9 @@ structure Subsemigroup (M : Type u) [Mul M] where
 
 
 /-- A submonoid of a monoid `M` is a subset containing 1 and closed under multiplication. -/
-structure Submonoid (M : Type u) [MulOneClass M] extends Subsemigroup M where
+structure Submonoid (M : Type u) [instM : MulOneClass M] extends Subsemigroup M where
   /-- A submonoid contains `1`. -/
-  one_mem' : (one : M) ∈ carrier
+  one_mem' : (instM.one : M) ∈ carrier
 
 
 /-- A subgroup of a group `G` is a subset containing 1, closed under multiplication
@@ -178,132 +178,6 @@ instance : SubgroupClass (Subgroup G) G where
 
 end sectionBasic
 
-
-
-section sectionProduct
-
-variable (G : Type u) [Group G]
-
-def ProductOfSubgroups (H K : Subgroup G) := {g : G | ∃ h k, h ∈ H.carrier ∧ k ∈ K.carrier ∧ g = h ~ k}
-
-
-end sectionProduct
-
-
-
-
-
-
-section sectionAction
-
-
-
-variable (G : Type u) [Group G] (S : Type u)
-
-class GroupAction extends LAction G S S where
-  one_id : ∀ s : S, (one : G) ~ s = s
-  assoc : ∀ (g h : G) (s : S), (g ~ h) ~ s = g ~ (h ~ s)
-
-
-
-
-
---def orbit {S G : Type u} [Group G] (s : S) (act : GroupAction G S)  :=
---  Set.range fun g : G => act.mul g s
-
-def orbit {S G : Type u} [Group G] (s : S) (act : GroupAction G S)  :=
-  {x : S // ∃ (g : G), act.mul g s = x}
-
-
-def stabilizer {S G : Type u} [Group G] (s : S) (act : GroupAction G S) : Subgroup G where
-  carrier := { m | act.mul m s = s }
-  one_mem' := act.one_id s
-  mul_mem' {m m'} (ha : act.mul m s = s) (hb : act.mul m' s = s) :=
-    show act.mul (m ~ m') s = s by rw [act.assoc, hb, ha]
-  inv_mem' {m} (h : act.mul m s = s) :=
-    show act.mul m⁻¹ s = s by sorry
-
-
-instance (S: Type u) (F : Finset S) (f : F) (act : GroupAction G F): Finset (orbit f act) := by sorry
-
-
-def isTransitive (act : GroupAction G S) : Prop := ∀ (s1 s2 : S), ∃ (g : G), act.mul g s1 = s2
-
-
-theorem orbit_theorem (act : GroupAction G S) : ∀ (x : S), Nat.card G = Nat.mul (Nat.card (orbit x act)) (Nat.card (stabilizer x act)) := by sorry
-
-
-theorem lagrange (G : Type u) [Group G] (H : Subgroup G) : Nat.card H ∣ Nat.card G := by sorry
-
-
-end sectionAction
-
-
-
-
-
-
-
-
-
-
-variable (p : ℕ) (G : Type u) [Group G] [Finite G]
-
-def IsPGroup (p : ℕ) (α : Type u) : Prop := ∃ n : ℕ, Nat.card α = p ^ n
-
-
-def isHighestPowerOfP (n p r : Nat) : Prop := p^r ∣ n ∧ ¬ p^(r+1) ∣ n
-
-
-
-
-variable (p : ℕ) (G : Type u) (pp : Prime p) [Group G] [Finite G] (r : ℕ) (h : isHighestPowerOfP (Nat.card G) p r) (m : ℕ) (h2 : Nat.card G = Nat.mul (p^r) m)
-
-class Sylow extends Subgroup G where
-  order : ∃ r : ℕ, Nat.card carrier = p ^ r ∧ isHighestPowerOfP (Nat.card G) p r
-
-
-def alpha_g (g : G) (h : G) : G := (g ~ h) ~ g⁻¹
-
-instance alpha : GroupAction G (Sylow p G) := by sorry
-  -- mul := fun (g : G) (S : Sylow p G) => {y : G | ∃ s, s ∈ S.carrier ∧ (alpha_g g s) = y }
-  -- one_id :
-  -- assoc :
-
-
-
-
-theorem orbit_alpha_divides_m (Q : Sylow p G) : Nat.card (orbit Q (alpha p G)) ∣ m := by sorry
-
-
-
-variable (U : Subgroup G) [Group U] (isp : IsPGroup p U)
-
---def Q : Sylow p G := by sorry
-
-variable (Q : Sylow p G)
-
-instance beta : GroupAction U (orbit Q (alpha p G)) := by sorry
-
-theorem card_eq_one_or_p_divides (Q : Sylow p G) (P :  orbit Q (alpha p G)):
-    (1 =  Nat.card (orbit P (beta p G U Q)))
-  ∨ (p ∣  Nat.card (orbit P (beta p G U Q))) := by sorry
-
---Satz a)
-theorem sylow_nonempty : Nonempty (Sylow p G) := by sorry
-
-
---Satz b)
-theorem pGroupSubgroupOfSylow (U : Subgroup G) (isp : IsPGroup p U.carrier) : ∃ (P : Sylow p G), U.carrier ⊆ P.carrier := by sorry
-
---Satz c)
-theorem alpha_transitive : isTransitive G (Sylow p G) (alpha p G) := by sorry
-
---Satz d)
-theorem spDividesM : Nat.card (Sylow p G) ∣ m := by sorry
-
---Satz e)
-theorem spModPEqOne : Nat.card (Sylow p G) ≡ 1 [MOD p] := by sorry
 
 
 end Semileanear
