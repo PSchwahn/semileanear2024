@@ -20,6 +20,8 @@ POSSIBLE DEFINITIONS:
 
 namespace Semileanear2024
 
+variable (α : Type)
+
 --lean version of Nat is just an inductive type:
 
 inductive ourNat where
@@ -32,7 +34,7 @@ open ourNat
 def add (m n : ourNat) : ourNat :=
   match n with
   | zero   => m
-  | succ n => succ (add m n)
+  | succ k => succ (add m k) -- n = k + 1
 
 #eval add (succ (succ zero)) (succ zero)
 
@@ -62,7 +64,6 @@ inductive NatAndAnother.le (n : NatAndAnother) : NatAndAnother → Prop
   | step {m} (hm : m ≠ another) : le n m → le n (succ m hm)
 --is this right?
 
-@[simp]
 def NatAndAnother.add (x y : NatAndAnother) : NatAndAnother :=
   match x with
   | another => another
