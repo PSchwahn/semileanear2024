@@ -15,11 +15,20 @@ open Semileanear2024
 
 #check NatAndAnother
 
+def EmptyRel : Empty → Empty → Prop := fun _ _ ↦ True
+
+instance : IsTrichotomous Empty EmptyRel := sorry
+instance : IsTrans Empty EmptyRel := sorry
+instance : IsWellFounded Empty EmptyRel := sorry
+instance woEmpty : IsWellOrder Empty EmptyRel where
+
+#check Nat.lt.isWellOrder
+
 def WellOrderOnEmpty : WellOrder :=
 {
   α := Empty
-  r := sorry
-  wo := sorry
+  r := EmptyRel
+  wo := woEmpty
 }
 
 def WellOrderOn1 : WellOrder :=
@@ -39,15 +48,20 @@ def WellOrderOn2 : WellOrder :=
 def WellOrderOnFinite : WellOrder :=
 {
   α := Fin n
-  r := sorry
+  r := fun a b ↦ (a < b)
   wo := sorry
 }
+
+instance : IsTrichotomous ℕ Nat.lt := ⟨Nat.lt_trichotomy⟩
+instance : IsTrans ℕ Nat.lt := ⟨@Nat.lt_trans⟩
+instance : IsWellFounded ℕ Nat.lt := ⟨Nat.lt_wfRel.wf⟩
+instance woNat : IsWellOrder ℕ Nat.lt where
 
 def WellOrderOmega : WellOrder :=
 {
   α := ℕ
-  r := sorry
-  wo := sorry
+  r := Nat.lt
+  wo := woNat
 }
 
 def WellOrderOmegaPlus1 : WellOrder :=
