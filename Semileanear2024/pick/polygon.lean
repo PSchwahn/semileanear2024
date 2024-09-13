@@ -116,3 +116,30 @@ def isInteger (p: Array Point) : Bool :=
 def q : Array Point := #[p0, p1, p2, ⟨ 5/:2, 3 ⟩]
 
 #eval isInteger q  -- false
+
+------------------------------------------------------------------------------
+-- calculate the winding number
+
+def Rat.abs (x : ℚ) : ℚ :=
+if x < 0 then -x else
+x
+
+#eval (42/:5).abs
+#eval (-7/:2).abs
+#eval (0:ℚ).abs
+
+def Rat.sign (x : ℚ) : ℚ :=
+if x < 0 then -1 else
+if 0 < x then  1 else
+0
+
+#eval (42:ℚ).sign
+#eval (-7:ℚ).sign
+#eval ( 0:ℚ).sign
+
+def w (u v : Point) : ℚ :=
+  (u.x.sign - v.x.sign).abs * (u × v).sign / 4
+
+#eval w p0 p1
+#eval w p1 p2
+#eval w p2 p0
