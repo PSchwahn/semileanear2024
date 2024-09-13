@@ -7,6 +7,10 @@ import Mathlib
 
 namespace Semileanear
 
+class ToType {A : Type u} (f : A→ Prop) where
+  a : A
+  h : f a
+
 section sectionBasic
 
 class LAction (α : Type u) (β : Type v) (γ : outParam (Type w)) where
@@ -221,7 +225,7 @@ def stabilizer {S G : Type u} [Group G] (s : S) (act : GroupAction G S) : Subgro
     show act.mul m⁻¹ s = s by sorry
 
 
-instance (F : Fintype u) : Fintype (orbit G F) := by sorry
+instance (S: Type u) (F : Finset S) (f : F) (act : GroupAction G F): Finset (orbit f act) := by sorry
 
 
 def isTransitive (act : GroupAction G S) : Prop := ∀ (s1 s2 : S), ∃ (g : G), act.mul g s1 = s2
@@ -276,16 +280,18 @@ theorem orbit_alpha_divides_m (Q : Sylow p G) : Nat.card (orbit Q (alpha p G)) �
 
 variable (U : Subgroup G) [Group U] (isp : IsPGroup p U)
 
-def Q : Sylow p G := by sorry
+--def Q : Sylow p G := by sorry
 
+variable (Q : Sylow p G)
 
+instance beta : GroupAction U (ToType (orbit Q (alpha p G))) := by sorry
 
+theorem card_eq_one_or_p_divides (Q P : Sylow p G) (h : P ∈ (orbit Q (alpha p G))):
+    (1 =  Nat.card (orbit ⟨P, h⟩ (beta p G U Q)))
+  ∨ (p ∣  Nat.card (orbit ⟨P, h⟩ (beta p G U Q))) := by sorry
 
-instance beta : GroupAction U (orbit (Q p G) (alpha p G)) := by sorry
-
-theorem card_eq_one_or_p_divides (Q P : Sylow p G) (h : P ∈ (orbit Q (alpha p G))) :
-(Nat.card (orbit P (beta p G U)) = 1) ∨ (p ∣ (orbit U (orbit G (Sylow p G) Q) U)) := by sorry
-
+variable (Q P : Sylow p G) (h : P ∈ (orbit Q (alpha p G)))
+#check (beta p G U)
 
 --Satz a)
 theorem sylow_nonempty : Nonempty (Sylow p G) := by sorry
