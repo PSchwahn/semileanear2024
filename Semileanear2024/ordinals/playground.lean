@@ -17,10 +17,10 @@ open Semileanear2024
 
 def EmptyRel : Empty → Empty → Prop := fun _ _ ↦ True
 
-instance : IsTrichotomous Empty EmptyRel := sorry
-instance : IsTrans Empty EmptyRel := sorry
-instance : IsWellFounded Empty EmptyRel := sorry
 instance woEmpty : IsWellOrder Empty EmptyRel where
+  trichotomous := sorry
+  trans := sorry
+  wf := sorry
 
 def WellOrderOnEmpty : WellOrder :=
 {
@@ -51,10 +51,10 @@ def WellOrderOnFinite : WellOrder :=
 }
 
 --if we wish we can reprove the relevant lemmas.
-instance : IsTrichotomous ℕ Nat.lt := ⟨Nat.lt_trichotomy⟩
-instance : IsTrans ℕ Nat.lt := ⟨@Nat.lt_trans⟩
-instance : IsWellFounded ℕ Nat.lt := ⟨Nat.lt_wfRel.wf⟩
 instance woNat : IsWellOrder ℕ Nat.lt where
+  trichotomous := Nat.lt_trichotomy
+  trans := @Nat.lt_trans
+  wf := Nat.lt_wfRel.wf
 
 def WellOrderOmega : WellOrder :=
 {
@@ -70,11 +70,16 @@ inductive lt (n : NatAndAnother) : NatAndAnother → Prop
   | step {m} (hm : m ≠ another) : lt n m → lt n (succ m hm)
 --is this right?
 
+instance woNatAndAnother : IsWellOrder NatAndAnother lt where
+  trichotomous := sorry
+  trans := sorry
+  wf := sorry
+
 def WellOrderOmegaPlus1 : WellOrder :=
 {
   α := NatAndAnother
   r := lt
-  wo := sorry
+  wo := woNatAndAnother
 }
 
 def omega := Ordinal.type WellOrderOmega.r
