@@ -1,5 +1,4 @@
 import Semileanear2024.sylow.basic
---maybe need to modify Submonoid class to give the right `one`
 
 namespace Semileanear
 

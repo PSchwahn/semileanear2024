@@ -99,9 +99,9 @@ class MulMemClass (S : Type*) (M : Type*) [Mul M] [SetLike S M] : Prop where
   mul_mem : ∀ {s : S} {a b : M}, a ∈ s → b ∈ s → a ~ b ∈ s
 
 /-- `OneMemClass S M` says `S` is a type of subsets `s ≤ M`, such that `1 ∈ s` for all `s`. -/
-class OneMemClass (S : Type*) (M : Type*) [One M] [SetLike S M] : Prop where
+class OneMemClass (S : Type*) (M : Type*) [instOne : One M] [SetLike S M] : Prop where
   /-- By definition, if we have `OneMemClass S M`, we have `1 ∈ s` for all `s : S`. -/
-  one_mem : ∀ s : S, (one : M) ∈ s
+  one_mem : ∀ s : S, (instOne.one : M) ∈ s
 
 
 /-- `SubmonoidClass S M` says `S` is a type of subsets `s ≤ M` that contain `1`
@@ -129,9 +129,9 @@ structure Subsemigroup (M : Type u) [Mul M] where
 
 
 /-- A submonoid of a monoid `M` is a subset containing 1 and closed under multiplication. -/
-structure Submonoid (M : Type u) [MulOneClass M] extends Subsemigroup M where
+structure Submonoid (M : Type u) [instM : MulOneClass M] extends Subsemigroup M where
   /-- A submonoid contains `1`. -/
-  one_mem' : (one : M) ∈ carrier
+  one_mem' : (instM.one : M) ∈ carrier
 
 
 /-- A subgroup of a group `G` is a subset containing 1, closed under multiplication
