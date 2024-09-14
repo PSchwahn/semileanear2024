@@ -2,6 +2,7 @@ import Mathlib.Data.Nat.Defs
 import Mathlib.Algebra.NeZero
 
 import Mathlib
+-- import Paperproof
 
 
 
@@ -178,5 +179,28 @@ end sectionBasic
 
 theorem inv_inv {G : Type u} [Group G] (g : G) : g⁻¹⁻¹ = g := sorry
 
+
+section sectionMengen
+
+variable {α : Type*}
+variable (H K : Finset α)
+
+
+def lem1: H ⊆ K → H.card ≤ K.card := by {
+  intro h
+  exact Finset.card_le_card h
+}
+
+def lem2: H ⊆ K ∧ H.card = K.card → H = K := by {
+  sorry
+}
+
+-- Lemma 1 Mengen
+
+
+
+-- Lemma 2 Mengen
+
+end sectionMengen
 
 end Semileanear
