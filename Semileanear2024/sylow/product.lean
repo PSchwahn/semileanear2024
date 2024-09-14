@@ -101,31 +101,6 @@ def lem7 (h7 : ProductOfSubgroups H K = K.carrier) : Subgroup K.toGroup := lem4 
   rw [instG.mul_one]
 })
 
-def inv_unique (g h1 h2 : G)(hyp: g ~ h1 = instG.one ∧ h1 ~ g = instG.one ∧ g ~ h2 = instG.one ∧ h2 ~ g = instG.one) : (h1 = h2) := by {
-  cases' hyp with hyp1 hyp
-  cases' hyp with hyp2 hyp
-  cases' hyp with hyp3 hyp4
-  rw [← instG.mul_one h1, ← hyp3, ← instG.mul_assoc, hyp2, instG.one_mul]
-}
-
-def inv_of_prod (g1 g2 : G) : ((g1 ~ g2)⁻¹ = g2⁻¹ ~ g1⁻¹) := by {
-  have hyp := inv_unique (g1 ~ g2) (g1 ~ g2)⁻¹ (g2⁻¹ ~ g1⁻¹)
-  apply hyp
-  constructor
-  apply instG.mul_inv_cancel
-  constructor
-  apply instG.inv_mul_cancel
-  constructor
-  rw [instG.mul_assoc]
-  nth_rw 2 [← instG.mul_assoc]
-  rw [instG.mul_inv_cancel]
-  rw [instG.one_mul]
-  rw [instG.mul_inv_cancel]
-  rw [instG.mul_assoc]
-  nth_rw 2 [← instG.mul_assoc]
-  rw [instG.inv_mul_cancel, instG.one_mul, instG.inv_mul_cancel]
-}
-
 end sectionProduct
 
 end Semileanear
