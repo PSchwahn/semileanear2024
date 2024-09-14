@@ -3,8 +3,6 @@ import Semileanear2024.sylow.lem3and4
 
 namespace Semileanear
 
--- 1.3 Produkt von U-Gruppen
-
 section sectionProduct
 
 variable {G : Type u} [instG : Group G] (H K : Subgroup G)
@@ -33,7 +31,7 @@ def lem5 (h5 : ∀ u ∈ H.carrier, conjug_subset u K.carrier = K.carrier) : Sub
     use aH ~ bH, p ~ bK, H.mul_mem' haH hbH, K.mul_mem' this hbK
     rw [ha, hb]
     dsimp [p]
-    calc aH ~ aK ~ (bH ~ bK) = aH ~ One.one ~ aK ~ (bH ~ bK) := by rw [instG.mul_one]
+    calc aH ~ aK ~ (bH ~ bK) = aH ~ instG.one ~ aK ~ (bH ~ bK) := by rw [instG.mul_one]
       _ = aH ~ (bH ~ bH⁻¹) ~ aK ~ (bH ~ bK) := by rw [instG.mul_inv_cancel]
       _ = aH ~ bH ~ bH⁻¹ ~ aK ~ (bH ~ bK) := by rw [instG.mul_assoc aH bH]
       _ = aH ~ bH ~ bH⁻¹ ~ (aK ~ (bH ~ bK)) := by rw [instG.mul_assoc]
@@ -43,7 +41,7 @@ def lem5 (h5 : ∀ u ∈ H.carrier, conjug_subset u K.carrier = K.carrier) : Sub
       _ = aH ~ bH ~ (bH⁻¹ ~ aK ~ bH ~ bK) := by rw [instG.mul_assoc bH⁻¹ aK]
   }
   one_mem' := by {
-    change ∃ h k, h ∈ H.carrier ∧ k ∈ K.carrier ∧ One.one = h ~ k
+    change ∃ h k, h ∈ H.carrier ∧ k ∈ K.carrier ∧ instG.one = h ~ k
     use instG.one, instG.one, H.one_mem', K.one_mem'
     rw [instG.one_mul]
   }
@@ -53,35 +51,7 @@ def lem5 (h5 : ∀ u ∈ H.carrier, conjug_subset u K.carrier = K.carrier) : Sub
     sorry
   }
 
-
---
-
---Konjugation
-def Konjug (g : G) (h : G) : G := (g ~ h) ~ g⁻¹ --Konjugation als G-Wirkung
-
-def KonjugSubSet (h : G) (P : Set G) : Set G := (Konjug h)''P  --Bild von Konjugation
-
---
-
-def ProductOfSubgroups (H K : Subgroup G) := {g : G | ∃ h k, h ∈ H.carrier ∧ k ∈ K.carrier ∧ g = h ~ k} --Definition 1
-
-def Lem5 (h5: ∀ h ∈ H.carrier, KonjugSubSet h K.carrier = K.carrier) : Subgroup G
-where
-  carrier := ProductOfSubgroups H K
-  mul_mem' := sorry
-  inv_mem' := sorry
-  one_mem' := by {
-    simp
-    change ∃ h k, h ∈ H.carrier ∧ k ∈ K.carrier ∧ One.one = h ~ k
-    use One.one, One.one
-    constructor
-    exact H.one_mem'
-    constructor
-    exact K.one_mem'
-    rw [MulOneClass.one_mul]
-  }
-
-def Lem6: K.carrier ⊆ ProductOfSubgroups H K := by {
+theorem lem6 : K.carrier ⊆ ProductOfSubgroups H K := by {
   change ∀ k ∈ K.carrier, k ∈ ProductOfSubgroups H K
   intro h1 h2
   change  ∃ h k, h ∈ H.carrier ∧ k ∈ K.carrier ∧ h1 = h ~ k
@@ -93,12 +63,12 @@ def Lem6: K.carrier ⊆ ProductOfSubgroups H K := by {
   rw [MulOneClass.one_mul]
 }
 
-def Lem7 (h7: ProductOfSubgroups H K = K.carrier) : Subgroup K.toGroup
-where
-  carrier :=  {x | x.1 ∈ H.carrier}
-  mul_mem' := sorry
-  inv_mem' := sorry
-  one_mem' := sorry
+def lem7 (h7 : ProductOfSubgroups H K = K.carrier) : Subgroup K.toGroup := lem4 H K (by {
+  intro h hh
+  rw [←h7]
+  use h, instG.one, hh, K.one_mem'
+  rw [instG.mul_one]
+})
 
 end sectionProduct
 
