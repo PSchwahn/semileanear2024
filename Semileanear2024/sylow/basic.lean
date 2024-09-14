@@ -228,15 +228,15 @@ def lem1: H ⊆ K → H.card ≤ K.card := by {
   exact Finset.card_le_card h
 }
 
-def lem2: H ⊆ K ∧ H.card = K.card → H = K := by {
-  sorry
+def lem2: H ⊆ K ∧ K.card = H.card → H = K := by {
+  intro h
+  cases' h with a b
+  apply Nat.le_of_eq at b
+  apply Finset.eq_of_superset_of_card_ge at b
+  rw [symm b]
+  exact a
 }
 
--- Lemma 1 Mengen
-
-
-
--- Lemma 2 Mengen
 
 end sectionMengen
 
