@@ -174,10 +174,9 @@ instance : SubgroupClass (Subgroup G) G where
   one_mem _ := (Subgroup.toSubmonoid _).one_mem'
   mul_mem := (Subgroup.toSubmonoid _).mul_mem'
 
-
-
 end sectionBasic
 
+theorem inv_inv {G : Type u} [Group G] (g : G) : g⁻¹⁻¹ = g := sorry
 
 
 end Semileanear

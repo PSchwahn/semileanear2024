@@ -55,7 +55,7 @@ end toGroup
 
 section Lem34
 
-variable (G : Type u) [Group G] (H K : Subgroup G)
+variable {G : Type u} [Group G] (H K : Subgroup G)
 
 #check H.toGroup
 #check Subgroup (H.toGroup) --geht!
@@ -99,7 +99,7 @@ def subgroup_of_intersection : Subgroup G where
     exact ⟨H.inv_mem' hx.1, K.inv_mem' hx.2⟩
   }
 
-def lem3 : Subgroup (H.toGroup) := lem4 G (subgroup_of_intersection G H K) H (by {
+def lem3 : Subgroup (H.toGroup) := lem4 (subgroup_of_intersection H K) H (by {
   change H.carrier ∩ K.carrier ⊆ H.carrier
   rintro x ⟨hxH, _⟩
   exact hxH
