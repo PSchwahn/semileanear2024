@@ -93,7 +93,7 @@ def p : Array Point := #[p0, p1, p2]
 ------------------------------------------------------------------------------
 -- check whether a polygon is integer, i.e. a lattice polygon
 
-def isInteger (p: Array Point) : Bool :=
+def isInteger (p : Array Point) : Bool :=
   ∀ i : Fin p.size, p[i].x.den = 1 ∧ p[i].y.den = 1
 
 #eval isInteger p  -- true
@@ -103,7 +103,23 @@ def q : Array Point := #[p0, p1, p2, ⟨ (5:ℚ)/2, 3 ⟩]
 #eval isInteger q  -- false
 
 ------------------------------------------------------------------------------
--- calculate the winding number
+-- calculate the enclosed area
+
+def area (u v : Point) : Rat :=
+  (u × v) / 2
+
+#eval area p0 p1
+
+def Area (p : Array Point) : Rat :=
+  if p.size < 2 then 0 else
+    let n := p.size
+    (Finset.range n).sum
+      fun i : Finset.range n ↦ area p[i] p[i+1] -- FIX ME!
+
+#eval Area p
+
+------------------------------------------------------------------------------
+-- calculate axis crossing
 
 def Rat.abs (x : ℚ) : ℚ :=
 if x < 0 then -x else
@@ -128,3 +144,14 @@ def w (u v : Point) : ℚ :=
 #eval w p0 p1
 #eval w p1 p2
 #eval w p2 p0
+
+------------------------------------------------------------------------------
+-- calculate the winding number
+
+def Wind (p : Array Point) : Rat :=
+  if p.size < 2 then 0 else
+    let n := p.size
+    (Finset.range n).sum
+      fun i : Finset.range n ↦ w p[i] p[i+1] -- FIX ME!
+
+#eval Wind p
