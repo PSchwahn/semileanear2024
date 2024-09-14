@@ -7,6 +7,8 @@ section sectionProduct
 
 variable {G : Type u}[instG : Group G](H K : Subgroup G)
 
+def ProductOfSubgroups := {g : G | ∃ h k, h ∈ H.carrier ∧ k ∈ K.carrier ∧ g = h ~ k}
+
 def conjug (g : G) (h : G) : G := (g ~ h) ~ g⁻¹
 
 def conjug_subset (g : G) (P : Set G) : Set G := (conjug g) '' P
