@@ -223,18 +223,15 @@ variable {α : Type*}
 variable (H K : Finset α)
 
 
-def lem1: H ⊆ K → H.card ≤ K.card := by {
-  intro h
+def lem1 (h : H ⊆ K) : H.card ≤ K.card := by {
   exact Finset.card_le_card h
 }
 
-def lem2: H ⊆ K ∧ K.card = H.card → H = K := by {
-  intro h
-  cases' h with a b
-  apply Nat.le_of_eq at b
-  apply Finset.eq_of_superset_of_card_ge at b
-  rw [symm b]
-  exact a
+def lem2 (h₁ : H ⊆ K) (h₂ : K.card = H.card) : H = K := by {
+  apply Nat.le_of_eq at h₂
+  apply Finset.eq_of_superset_of_card_ge at h₂
+  rw [symm h₂]
+  exact h₁
 }
 
 
