@@ -177,8 +177,14 @@ instance : SubgroupClass (Subgroup G) G where
 
 end sectionBasic
 
-theorem inv_inv {G : Type u} [Group G] (g : G) : g⁻¹⁻¹ = g := sorry
-
+theorem inv_inv {G : Type u} [Group G] (g : G) : g⁻¹⁻¹ = g := by
+    have h1 : g⁻¹⁻¹ ~ g⁻¹ ~ g = g
+    rw [Group.inv_mul_cancel, MulOneClass.one_mul] 
+    have h2 : g⁻¹⁻¹ ~ g⁻¹ ~ g = g⁻¹⁻¹
+    rw [Semigroup.mul_assoc, Group.inv_mul_cancel, MulOneClass.mul_one]
+    rw [← h2]
+    nth_rewrite 4 [← h1]
+    rfl
 
 section sectionMengen
 
