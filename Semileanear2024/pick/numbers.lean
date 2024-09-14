@@ -31,6 +31,19 @@ inductive N where
 #check N.zero.succ
 #check N.zero.succ.succ
 
+def fib (n : ℕ) : ℕ :=
+match n with
+| 0 => 1
+| 1 => 1
+| n+2 => fib (n+1) + fib n
+
+#check fib
+example : fib (n+2) = fib (n+1) + fib n := rfl
+
+#eval fib 7 -- 21
+example : fib 7 = 21 := rfl
+example : fib 7 = 22 := rfl
+
 ------------------------------------------------------------------------------
 -- Integers as inductive types
 
