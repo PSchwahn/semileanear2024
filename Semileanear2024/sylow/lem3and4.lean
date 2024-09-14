@@ -60,7 +60,7 @@ variable (G : Type u) [Group G] (H K : Subgroup G)
 #check H.toGroup
 #check Subgroup (H.toGroup) --geht!
 
-instance lem4 (h : H.carrier ⊆ K.carrier) : Subgroup (K.toGroup) where
+def lem4 (_ : H.carrier ⊆ K.carrier) : Subgroup (K.toGroup) where
   carrier := { x | x.1 ∈ H.carrier }
   mul_mem' := by {
     rintro ⟨a, _⟩ ⟨b, _⟩ ha hb
@@ -80,7 +80,7 @@ instance lem4 (h : H.carrier ⊆ K.carrier) : Subgroup (K.toGroup) where
     exact H.inv_mem' ha
   }
 
-instance subgroup_of_intersection : Subgroup G := {
+def subgroup_of_intersection : Subgroup G where
   carrier := H.carrier ∩ K.carrier
   mul_mem' := by {
     rintro a b ⟨haH, haK⟩ ⟨hbH, hbK⟩
@@ -98,9 +98,8 @@ instance subgroup_of_intersection : Subgroup G := {
     simp
     exact ⟨H.inv_mem' hx.1, K.inv_mem' hx.2⟩
   }
-}
 
-instance lem3 : Subgroup (H.toGroup) := lem4 G (subgroup_of_intersection G H K) H (by {
+def lem3 : Subgroup (H.toGroup) := lem4 G (subgroup_of_intersection G H K) H (by {
   change H.carrier ∩ K.carrier ⊆ H.carrier
   rintro x ⟨hxH, _⟩
   exact hxH
