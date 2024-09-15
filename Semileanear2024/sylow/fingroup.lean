@@ -10,6 +10,13 @@ variable {G : Type u} [Group G] [finG : Fintype G]
 variable (S : Set G) [DecidablePred S]
 
 def finset_of_subset : Finset G := filter S finG.elems
+--ist finset und Finset.card der richtige Ansatz? Oder lieber Nat.card?
+
+variable (H : Subgroup G)
+
+instance : Fintype H.toGroup where
+  elems := sorry
+  complete := sorry
 
 end finset
 
@@ -26,15 +33,20 @@ theorem lem8 (H K : Subgroup G) : card (finset_of_subset (ProductOfSubgroups H K
     * card (finset_of_subset (H.carrier ∩ K.carrier))
     = card (finset_of_subset H.carrier) * card (finset_of_subset K.carrier) := sorry
 
---eine p-untergruppe ist eine untergruppe von ordnung p^s mit s ≤ r.
--- G ist von der Größe p^r * m.
+--Satz von Lagrange
+theorem thm2 (H : Subgroup G) : card (finset_of_subset H.carrier) ∣ card finG.elems := sorry
 
 variable (p : ℕ)
 
 def IsPGroup (H : Subgroup G) : Prop := ∃ k : ℕ, card (finset_of_subset H.carrier) = p ^ k
 
 theorem PGroups_intersection (H K : Subgroup G) (hH : IsPGroup p H) (hK : IsPGroup p K) :
-    IsPGroup p (subgroup_of_intersection H K) := sorry
+    IsPGroup p (subgroup_of_intersection H K) := by {
+        let inter_sub_of_K := lem3 H K
+        have := thm2 inter_sub_of_K
+        dsimp [inter_sub_of_K, lem3, lem4, subgroup_of_intersection] at this
+        sorry
+    }
 
 theorem lem9 (hp : Nat.Prime p) (H K : Subgroup G) (hH : IsPGroup p H) (hK : IsPGroup p K) :
     ∃ l : ℕ, card (finset_of_subset (ProductOfSubgroups H K)) = p ^ l := by
