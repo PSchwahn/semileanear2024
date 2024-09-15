@@ -11,13 +11,6 @@ variable (S : Set G) [DecidablePred S]
 
 def finset_of_subset : Finset G := filter S finG.elems
 
---instance : Fintype H.toGroup where
---  elems := sorry
---  complete := sorry
---or Fintype H.carrier?
-
-#check card (finset_of_subset S)
-
 end finset
 
 section fingroup
@@ -36,11 +29,33 @@ theorem lem8 (H K : Subgroup G) : card (finset_of_subset (ProductOfSubgroups H K
 --eine p-untergruppe ist eine untergruppe von ordnung p^s mit s ≤ r.
 -- G ist von der Größe p^r * m.
 
-variable (p : ℕ) (hp : Nat.Prime p)
+variable (p : ℕ)
 
 def IsPGroup (H : Subgroup G) : Prop := ∃ k : ℕ, card (finset_of_subset H.carrier) = p ^ k
 
-theorem lem9 (H K : Subgroup G) (hH : IsPGroup H) (hK IsPGroup K) :
-    ∃ l : ℕ, card (finset_of_subset (ProductOfSubgroups H K)) = p ^ l := sorry
+theorem PGroups_intersection (H K : Subgroup G) (hH : IsPGroup p H) (hK : IsPGroup p K) :
+    IsPGroup p (subgroup_of_intersection H K) := sorry
+
+theorem lem9 (hp : Nat.Prime p) (H K : Subgroup G) (hH : IsPGroup p H) (hK : IsPGroup p K) :
+    ∃ l : ℕ, card (finset_of_subset (ProductOfSubgroups H K)) = p ^ l := by
+  rcases PGroups_intersection p H K hH hK with ⟨kI, hI⟩
+  rcases hH with ⟨kH, hH⟩
+  rcases hK with ⟨kK, hK⟩
+  use kH + kK - kI
+  have := lem8 H K
+  dsimp[subgroup_of_intersection] at hI
+  rw [hH, hK, hI, ←pow_add] at this
+  rw [←@Nat.mul_div_left (card (finset_of_subset (ProductOfSubgroups H K))) (p^kI) (Nat.pow_pos (Nat.Prime.pos hp)), this]
+  rw [Nat.pow_div]
+  swap
+  exact Nat.Prime.pos hp
+  calc kI ≤ kH := ?_
+    _ ≤ kH + kK := Nat.le_add_right kH kK
+  rw [←Nat.pow_le_pow_iff_right (Nat.Prime.one_lt hp), ←hI, ←hH]
+  apply card_le_card
+  dsimp [finset_of_subset]
+  apply monotone_filter_right
+  change H.carrier ∩ K.carrier ⊆ H.carrier
+  apply Set.inter_subset_left
 
 end fingroup
