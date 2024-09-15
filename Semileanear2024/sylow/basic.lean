@@ -74,24 +74,29 @@ instance instMonoid : Monoid ℕ where
   mul_one := Nat.add_zero
 
 
+-- This theorem is used in the definition of cyclic Group
+-- because lean seems to be confused about the addition once
+-- being called '+' and once '~'
+theorem Fin.add_def' : ∀ (a b : Fin n), a.add b = a + b := by
+  intro a b
+  rfl
 
--- instance cyclicGroup (n : ℕ) [NeZero n] : Group (Fin n) where
---   mul := Fin.add
---   mul_assoc := {by simp [Fin.ext_iff, Fin.add_def, Nat.add_assoc] }
---   one := Fin.mk 0 (Nat.pos_of_neZero n)
---   one_mul := Fin.zero_add
---   mul_one := Fin.add_zero
---   inv := fun a ↦ Fin.mk ((n - a) % n) (Nat.mod_lt _ a.size_pos)
---   inv_mul_cancel := fun ⟨a, ha⟩ ↦
---       Fin.ext <| (Nat.mod_add_mod _ _ _).trans <| by
---       rw [Nat.sub_add_cancel, Nat.mod_self]
---       . apply rfl
---       . exact le_of_lt ha
+instance cyclicGroup (n : ℕ) [NeZero n] : Group (Fin n) where
+  mul := Fin.add
+  mul_assoc := by simp [Fin.add_def', Fin.ext_iff, Fin.add_def, Nat.add_assoc]
+  one := Fin.mk 0 (Nat.pos_of_neZero n) 
+  one_mul := Fin.zero_add
+  mul_one := Fin.add_zero
+  inv := fun a ↦ Fin.mk ((n - a) % n) (Nat.mod_lt _ a.size_pos)
+  inv_mul_cancel := by
+    intro a
+    simp [Fin.add_def', Fin.ext_iff, Fin.add_def]  
+  mul_inv_cancel := by 
+    intro a
+    simp [Fin.add_def', Fin.ext_iff, Fin.add_def]
 
-
-
-
-
+--def A := cyclicGroup 3
+--#eval (2: Fin 3) ~ (2:Fin 3) -- works
 
 
 /-- `MulMemClass S M` says `S` is a type of sets `s : Set M` that are closed under `(~)` -/
