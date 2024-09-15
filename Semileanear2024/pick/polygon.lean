@@ -46,8 +46,8 @@ infixl:65 " - " => Point.sub    -- left associative, precedence 65
 infix:70 " × " => Point.cross   -- precedence 70
 infix:70 " ⬝ " => Point.sprod   -- precedence 70
 
-#eval p0     -- { x := -3, y := 2 }
-#eval p1     -- { x := 5, y := 3 }
+#eval p0       -- { x := -3, y := 2 }
+#eval p1       -- { x := 5, y := 3 }
 #eval p0 + p1  -- { x := 2, y := 5 }
 #eval p0 - p1  -- { x := -8, y := -1 }
 #eval p0 × p1  -- -19
@@ -134,16 +134,16 @@ if x < 0 then -1 else
 if 0 < x then  1 else
 0
 
-#eval (42:ℚ).sign
-#eval (-7:ℚ).sign
-#eval ( 0:ℚ).sign
+#eval (42:ℚ).sign -- 1
+#eval (-7:ℚ).sign -- -1
+#eval ( 0:ℚ).sign -- 0
 
 def w (u v : Point) : ℚ :=
   (u.x.sign - v.x.sign).abs * (u × v).sign / 4
 
-#eval w p0 p1
-#eval w p1 p2
-#eval w p2 p0
+#eval w p0 p1 -- -1/2
+#eval w p1 p2 -- 1/2
+#eval w p2 p0 -- 0
 
 ------------------------------------------------------------------------------
 -- calculate the winding number
