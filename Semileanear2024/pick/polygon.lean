@@ -11,7 +11,9 @@ import Mathlib open Finset
 def Rat.fraction (a b : Int) := (a : ℚ) / (b : ℚ)
 infixr:70 " // " => Rat.fraction
 
+#eval 20 // 5 -- 4
 #eval 30 // 8 -- (15 : Rat)/4
+#eval 30 / 8  -- 3, be careful
 
 ------------------------------------------------------------------------------
 -- Rational points in the plane
@@ -82,7 +84,7 @@ class Polygon where
   vert : Nat → Point
   cycl : ∀ i : Nat, vert i = vert (i+size)
 
-macro polygon:term "[" index:term "]" : term => `( ($polygon).vert ($index) )
+macro polygon:term "[" index:term "]" : term => `(($polygon).vert ($index))
 
 instance toPolygon (arr : Array Point) (h : arr.size > 0 := by decide) : Polygon where
   size := arr.size
@@ -90,7 +92,7 @@ instance toPolygon (arr : Array Point) (h : arr.size > 0 := by decide) : Polygon
   vert (i) := arr[i % arr.size]'(Nat.mod_lt i h)
   cycl := by intro i; simp
 
-def pl := toPolygon #[p0, p1, p2] -- (by decide) is implicit
+def pl := toPolygon #[p0, p1, p2]
 
 #check pl
 #check pl.size
@@ -116,15 +118,20 @@ def pl' := toPolygon #[p0, p1, p2, p3]
 ------------------------------------------------------------------------------
 -- calculate the enclosed area
 
-def trapezoid_area (u v : Point) : Rat :=
+def trapezoidArea (u v : Point) : Rat :=
   (u.x - v.x) * (u.y + v.y) / 2
 
 def Polygon.area (p : Polygon) : Rat :=
-  ∑ i ∈ range (p.size), trapezoid_area (p[i+1]) (p[i])
-  -- (p[i+1].x - p[i].x) * (p[i+1].y + p[i].y) / 2
+  ∑ i ∈ range (p.size), trapezoidArea (p[i]) (p[i+1])
 
 #eval pl.area   -- -19
 #eval pl'.area  -- (-31 : Rat)/2
+
+def square := toPolygon #[⟨ 1, 1⟩, ⟨-1, 1⟩, ⟨-1,-1⟩, ⟨ 1,-1⟩]
+#eval square.area
+
+def diamond := toPolygon #[⟨ 1, 0⟩, ⟨ 0, 1⟩, ⟨-1, 0⟩, ⟨ 0,-1⟩]
+#eval diamond.area
 
 ------------------------------------------------------------------------------
 -- calculate the winding number by counting axis crossings
@@ -145,37 +152,44 @@ if 0 < x then  1 else
 #eval (-7:ℚ).sign -- -1
 #eval ( 0:ℚ).sign -- 0
 
-def axis_crossing (u v : Point) : ℚ :=
+def axisCrossing (u v : Point) : ℚ :=
   (u.x.sign - v.x.sign).abs * (u × v).sign / 4
 
-#eval axis_crossing p0 p1 -- -1/2
-#eval axis_crossing p1 p2 -- 1/2
-#eval axis_crossing p2 p0 -- 0
+#eval axisCrossing p0 p1 -- -1/2
+#eval axisCrossing p1 p2 -- 1/2
+#eval axisCrossing p2 p0 -- 0
 
-def Polygon.wind (p : Polygon) (q : Point): Rat :=
-  ∑ i ∈ range (p.size), axis_crossing (p[i+1]-q) (p[i]-q)
+def Polygon.wind (p : Polygon) (q : Point := ⟨0,0⟩) : Rat :=
+  ∑ i ∈ range (p.size), axisCrossing (p[i] - q) (p[i+1] - q)
 
-#eval pl.wind (⟨0,0⟩) -- 0
+#eval pl.wind -- 0
 
-def square := toPolygon #[⟨ 1, 1⟩, ⟨-1, 1⟩, ⟨-1,-1⟩, ⟨ 1,-1⟩]
-#eval square.area
-#eval square.wind ⟨0,0⟩
-#eval square.wind ⟨1,0⟩
+#eval square.wind ⟨0,0⟩ -- 1
+#eval square.wind ⟨1,0⟩ -- (1 : Rat)/2
+#eval square.wind ⟨1,1⟩ -- (1 : Rat)/4
 
 def diamond := toPolygon #[⟨ 1, 0⟩, ⟨ 0, 1⟩, ⟨-1, 0⟩, ⟨ 0,-1⟩]
-#eval diamond.area
-#eval diamond.wind ⟨0,0⟩
-#eval diamond.wind ⟨1,0⟩
+#eval diamond.wind ⟨0,0⟩ -- 1
+#eval diamond.wind ⟨1,0⟩ -- 0
+#eval diamond.wind ⟨1,1⟩ -- 0
 
 ------------------------------------------------------------------------------
 -- calculate the number of enclosed lattice points, 'nelp' for short
 
+open Finset Int
+
 def Polygon.box (p : Polygon): Int :=
-  max ⌈ abs (p[0].x) ⌉ ⌈ abs (p[0].y) ⌉ -- FIX ME
+  max ⌈ abs (p[0].x) ⌉ ⌈ abs (p[0].y) ⌉ -- FIXME
 
 def Polygon.nelp (p : Polygon): Rat := -- number of enclosed lattice points
-    let L := range 100 -- should be {-max,...,max}
-    ∑ i ∈ L, ∑ j ∈ L, p.wind (⟨i,j⟩ : Point)
+    let L := Icc (-100 : ℤ) (100 : ℤ) -- FIXME should be {-max,...,max}
+    ∑ i ∈ L, ∑ j ∈ L, p.wind (⟨i,j⟩)
+
+#eval square.area
+#eval square.nelp
+
+#eval diamond.area
+#eval diamond.nelp
 
 ------------------------------------------------------------------------------
 -- Finally, we can state Pick's theorem
