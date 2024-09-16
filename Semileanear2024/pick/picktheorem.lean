@@ -11,7 +11,9 @@ import Semileanear2024.pick.polygon
 -- Pick's theorem states (in its algebraic form) that for any lattice polygon
 -- the enclosed area equals the number of enclosed lattice points.
 
-example square.area = 4 ∧ square.nelp = 4 := by
+example square.area = 4
+
+ ∧ square.nelp = 4 := by
   simp
 
 #eval diamond.area  -- 2

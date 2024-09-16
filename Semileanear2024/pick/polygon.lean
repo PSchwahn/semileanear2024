@@ -213,7 +213,10 @@ def Polygon.box (p : Polygon): Int :=
 
 def Polygon.nelp (p : Polygon): Rat := -- number of enclosed lattice points
     let L := Icc (-100 : ℤ) (100 : ℤ) -- FIXME should be {-box,...,box}
-    ∑ i ∈ L, ∑ j ∈ L, p.wind (⟨i,j⟩)
+    ∑ i ∈ L, ∑ j ∈ L, p.wind ⟨i,j⟩
+
+-- example : square.area = 4 := by decide  -- currently gets stuck
+-- example : square.nelp = 4 := by decide  -- currently gets stuck
 
 #eval square.area  -- 4
 #eval square.nelp  -- 4
