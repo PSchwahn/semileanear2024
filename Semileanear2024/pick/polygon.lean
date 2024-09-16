@@ -1,15 +1,14 @@
-------------------------------------------------------------------------------
--- Formalizing Pick's Theorem... and learning LEAN along the way.
--- Integer polygons, their area and the number of enclosed lattice points
-------------------------------------------------------------------------------
-
 import Mathlib open Finset
 
-------------------------------------------------------------------------------
--- Short hand notation for fractions
+/- ---------------------------------------------------------------------------
+Formalizing Pick's Theorem... and learning LEAN along the way.
 
-def Rat.fraction (a b : Int) := (a : ℚ) / (b : ℚ)
-infixr:70 " // " => Rat.fraction
+In this file we implement polygons with rational vertices and
+calculate their area and the number of enclosed lattice points.
+--------------------------------------------------------------------------- -/
+
+def Rat.fraction (a b : Int) := (a : ℚ) / (b : ℚ)  -- short hand notation
+infixr:70 " // " => Rat.fraction  -- infix, associate right, precedence 70
 
 #eval 20 // 5 -- 4
 #eval 30 // 8 -- (15 : Rat)/4
@@ -184,6 +183,8 @@ def Polygon.umlaufzahl (p : Polygon) : Rat :=
 #eval diamond.umlaufzahl  -- 1
 #eval eight.umlaufzahl    -- 0
 
+-- example : square.umlaufzahl = 1 := by decide  -- currently gets stuck
+
 ------------------------------------------------------------------------------
 -- We calculate the winding number by counting axis crossings
 -- Please do not confuse 'winding number' and 'turning number' above.
@@ -215,9 +216,6 @@ def Polygon.nelp (p : Polygon): Rat := -- number of enclosed lattice points
     let L := Icc (-100 : ℤ) (100 : ℤ) -- FIXME should be {-box,...,box}
     ∑ i ∈ L, ∑ j ∈ L, p.wind ⟨i,j⟩
 
--- example : square.area = 4 := by decide  -- currently gets stuck
--- example : square.nelp = 4 := by decide  -- currently gets stuck
-
 #eval square.area  -- 4
 #eval square.nelp  -- 4
 
@@ -226,3 +224,6 @@ def Polygon.nelp (p : Polygon): Rat := -- number of enclosed lattice points
 
 #eval eight.area  -- 2
 #eval eight.nelp  -- 2
+
+-- example : square.area = 4 := by decide  -- currently gets stuck
+-- example : square.nelp = 4 := by decide  -- currently gets stuck

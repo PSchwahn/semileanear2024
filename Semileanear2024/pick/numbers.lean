@@ -1,8 +1,8 @@
-/-
-This file is just a playgound for testing some ideas
--/
-
 import Mathlib
+
+/- ---------------------------------------------------------------------------
+This file is just a playgound for testing some ideas
+-----------------------------------------------------------------------------/
 
 ------------------------------------------------------------------------------
 -- The number system, without inclusion, needs cast
