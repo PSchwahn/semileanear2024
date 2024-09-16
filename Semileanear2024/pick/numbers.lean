@@ -1,3 +1,8 @@
+------------------------------------------------------------------------------
+-- Formalizing Pick's Theorem... and learning LEAN along the way!
+-- This is just a playgound for testing some ideas
+------------------------------------------------------------------------------
+
 import Mathlib
 -- import Mathlib.Data.Nat.Basic
 -- import Mathlib.Data.Int.Basic
@@ -42,7 +47,6 @@ example : fib (n+2) = fib (n+1) + fib n := rfl
 
 #eval fib 7 -- 21
 example : fib 7 = 21 := rfl
-example : fib 7 = 22 := rfl
 
 ------------------------------------------------------------------------------
 -- Integers as inductive types
@@ -83,3 +87,22 @@ def z := 15/:3
 #eval z      -- 5
 #eval z.num  -- 5
 #eval z.den  -- 1
+
+------------------------------------------------------------------------------
+-- An array is a list with additional nice features
+
+def l := [7, 8, 9] -- list
+#check l      -- List ℕ
+#eval l.size  -- invalid field 'size'
+
+def a := #[7, 8, 9] -- array
+#check a      -- Array ℕ
+#eval a.size  -- 3
+#eval a[0]    -- 7
+#eval a[1]    -- 8
+#eval a[2]    -- 9
+#eval a[3]    -- failed to prove that index is valid
+
+#eval a[(2 : Fin 3)] -- 9
+#eval a[(3 : Fin 3)] -- 7
+#eval a[(4 : Fin 3)] -- 8

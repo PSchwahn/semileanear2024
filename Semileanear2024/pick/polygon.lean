@@ -1,16 +1,26 @@
-import Mathlib
--- import Mathlib.Data.Real.Basic
--- import algebra.big_operators.basic
--- import data.nat.interval
+------------------------------------------------------------------------------
+-- Formalizing Pick's Theorem... and learning LEAN along the way!
+-- Integer polygons, their area and the number of enclosed lattice points
+------------------------------------------------------------------------------
+
+import Mathlib open Finset
 
 ------------------------------------------------------------------------------
--- rational points in the plane
+-- Short hand notation for fractions
+
+def Rat.fraction (a b : Int) := (a : ℚ) / (b : ℚ)
+infixr:70 " // " => Rat.fraction
+
+#eval 30 // 8 -- (15 : Rat)/4
+
+------------------------------------------------------------------------------
+-- Rational points in the plane
 
 @[ext]
-structure Point where -- structure or class?
-  x : Rat             -- Rat or Int?
-  y : Rat             -- Rat or Int?
-  deriving Repr       -- enables #eval for debugging
+structure Point where  -- structure or class?
+  x : Rat              -- Rat or Int?
+  y : Rat              -- Rat or Int?
+  deriving Repr        -- enables #eval for debugging
 
 #check Point    -- Type
 #check Point.x  -- Int
@@ -25,11 +35,11 @@ def p0 : Point where
 
 def p1 : Point := ⟨ 5, 3 ⟩
 def p2 : Point := ⟨ -1, 7 ⟩
+def p3 : Point := ⟨ -1, 7//2 ⟩
 
-#check p1  -- Point
-#check p2  -- Point
 #eval p1   -- { x := 5, y := 3 }
 #eval p2   -- { x := -1, y := 7 }
+#eval p3   -- { x := -1, y := (7 : Rat)/2 }
 
 def Point.add (u v : Point) : Point := ⟨ u.x + v.x, u.y + v.y ⟩
 def Point.sub (u v : Point) : Point := ⟨ u.x - v.x, u.y - v.y ⟩
@@ -53,77 +63,74 @@ infix:70 " ⬝ " => Point.sprod   -- precedence 70
 #eval p0 × p1  -- -19
 #eval p0 ⬝ p1  -- -9
 
-def Point.isInteger (q: Point) : Bool :=
+def Point.isInteger (q: Point) : Bool := -- or Prop?
   q.x.den = 1 ∧ q.y.den = 1
 
-#eval p0.x.den = 1 ∧ p0.y.den = 1
-#eval p0.isInteger
+#eval p0.isInteger -- true
+#eval p1.isInteger -- true
+#eval p2.isInteger -- true
+#eval p3.isInteger -- false
 
 ------------------------------------------------------------------------------
--- An array is a list with additional nice features
+-- A polygon p is a cyclic list of points p_1, ..., p_n = p_0
+-- We implement this as Nat → Point with some positive period
 
-def l := [7, 8, 9] -- list
-#check l      -- List ℕ
-#eval l.size  -- invalid field 'size'
+@[ext]
+class Polygon where
+  size : Nat
+  ndeg : size > 0
+  vert : Nat → Point
+  cycl : ∀ i : Nat, vert i = vert (i+size)
 
-def a := #[7, 8, 9] -- array
-#check a      -- Array ℕ
-#eval a.size  -- 3
-#eval a[0]    -- 7
-#eval a[1]    -- 8
-#eval a[2]    -- 9
-#eval a[3]    -- failed to prove that index is valid
+macro polygon:term "[" index:term "]" : term => `( ($polygon).vert ($index) )
 
-#eval a[(2 : Fin 3)] -- 9
-#eval a[(3 : Fin 3)] -- 7
-#eval a[(4 : Fin 3)] -- 8
+instance toPolygon (arr : Array Point) (h : arr.size > 0 := by decide) : Polygon where
+  size := arr.size
+  ndeg := h
+  vert (i) := arr[i % arr.size]'(Nat.mod_lt i h)
+  cycl := by intro i; simp
 
-------------------------------------------------------------------------------
--- an polygon p = [p_1, ..., p_n] is an array of points
+def pl := toPolygon #[p0, p1, p2] -- (by decide) is implicit
 
-def p : Array Point := #[p0, p1, p2]
-#check p     -- Array Point
-#eval p      -- #[{ x := -3, y := 2 }, { x := 5, y := 3 }, { x := -1, y := 7 }]
-#eval p.size -- 3
-#eval p[0]   -- { x := -3, y := 2 }
-#eval p[1]   -- { x := 5, y := 3 }
-#eval p[2]   -- { x := -1, y := 7 }
-#eval p[(3 : Fin 3)]
+#check pl
+#check pl.size
+#check pl.ndeg
+#check pl.vert
+#check pl.cycl
+#eval pl.size
+#eval pl[0] -- p0
+#eval pl[1] -- p1
+#eval pl[2] -- p2
+#eval pl[3] -- p0, repeats periodically
 
-------------------------------------------------------------------------------
--- check whether a polygon is integer, i.e. a lattice polygon
+def Polygon.isInteger (p : Polygon) : Bool := -- or Prop?
+  ∀ i : Fin p.size, p[i].isInteger -- or ∀ i : Nat, p[i].isInteger
+  -- ∀ i : Fin p.size, p[i].x.den = 1 ∧ p[i].y.den = 1
+  -- ∀ i : Fin p.size, (p.vert i).isInteger  -- p[i].x.den = 1 ∧ p[i].y.den = 1
 
-def isInteger (p : Array Point) : Bool :=
-  ∀ i : Fin p.size, p[i].x.den = 1 ∧ p[i].y.den = 1
+#eval pl.isInteger -- true
 
-#eval isInteger p  -- true
-
-def q : Array Point := #[p0, p1, p2, ⟨ (5:ℚ)/2, 3 ⟩]
-
-#eval isInteger q  -- false
+def pl' := toPolygon #[p0, p1, p2, p3]
+#eval pl'.isInteger -- false
 
 ------------------------------------------------------------------------------
 -- calculate the enclosed area
 
-def area (u v : Point) : Rat :=
-  (u × v) / 2
+def trapezoid_area (u v : Point) : Rat :=
+  (u.x - v.x) * (u.y + v.y) / 2
 
-#eval area p0 p1
+def Polygon.area (p : Polygon) : Rat :=
+  ∑ i ∈ range (p.size), trapezoid_area (p[i+1]) (p[i])
+  -- (p[i+1].x - p[i].x) * (p[i+1].y + p[i].y) / 2
 
-def Area (p : Array Point) : Rat :=
-  if p.size < 2 then 0 else
-    let n := p.size
-    (Finset.range n).sum
-      fun i : Finset.range n ↦ area p[i] p[i+1] -- FIX ME!
-
-#eval Area p
+#eval pl.area   -- -19
+#eval pl'.area  -- (-31 : Rat)/2
 
 ------------------------------------------------------------------------------
--- calculate axis crossing
+-- calculate the winding number by counting axis crossings
 
 def Rat.abs (x : ℚ) : ℚ :=
-if x < 0 then -x else
-x
+if x < 0 then -x else x
 
 #eval (42/(5:ℚ)).abs
 #eval (-7/(2:ℚ)).abs
@@ -138,20 +145,40 @@ if 0 < x then  1 else
 #eval (-7:ℚ).sign -- -1
 #eval ( 0:ℚ).sign -- 0
 
-def w (u v : Point) : ℚ :=
+def axis_crossing (u v : Point) : ℚ :=
   (u.x.sign - v.x.sign).abs * (u × v).sign / 4
 
-#eval w p0 p1 -- -1/2
-#eval w p1 p2 -- 1/2
-#eval w p2 p0 -- 0
+#eval axis_crossing p0 p1 -- -1/2
+#eval axis_crossing p1 p2 -- 1/2
+#eval axis_crossing p2 p0 -- 0
+
+def Polygon.wind (p : Polygon) (q : Point): Rat :=
+  ∑ i ∈ range (p.size), axis_crossing (p[i+1]-q) (p[i]-q)
+
+#eval pl.wind (⟨0,0⟩) -- 0
+
+def square := toPolygon #[⟨ 1, 1⟩, ⟨-1, 1⟩, ⟨-1,-1⟩, ⟨ 1,-1⟩]
+#eval square.area
+#eval square.wind ⟨0,0⟩
+#eval square.wind ⟨1,0⟩
+
+def diamond := toPolygon #[⟨ 1, 0⟩, ⟨ 0, 1⟩, ⟨-1, 0⟩, ⟨ 0,-1⟩]
+#eval diamond.area
+#eval diamond.wind ⟨0,0⟩
+#eval diamond.wind ⟨1,0⟩
 
 ------------------------------------------------------------------------------
--- calculate the winding number
+-- calculate the number of enclosed lattice points, 'nelp' for short
 
-def Wind (p : Array Point) : Rat :=
-  if p.size < 2 then 0 else
-    let n := p.size
-    (Finset.range n).sum
-      fun i : Finset.range n ↦ w p[i] p[i+1] -- FIX ME!
+def Polygon.box (p : Polygon): Int :=
+  max ⌈ abs (p[0].x) ⌉ ⌈ abs (p[0].y) ⌉ -- FIX ME
 
-#eval Wind p
+def Polygon.nelp (p : Polygon): Rat := -- number of enclosed lattice points
+    let L := range 100 -- should be {-max,...,max}
+    ∑ i ∈ L, ∑ j ∈ L, p.wind (⟨i,j⟩ : Point)
+
+------------------------------------------------------------------------------
+-- Finally, we can state Pick's theorem
+
+theorem pick_area : ∀ p : Polygon, p.isInteger → p.area = p.nelp := by
+  sorry
