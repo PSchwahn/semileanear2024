@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------
--- Formalizing Pick's Theorem... and learning LEAN along the way!
+-- Formalizing Pick's Theorem... and learning LEAN along the way.
 -- We formalize the umlaufsatz for simply closed polygons, completing Pick
 ------------------------------------------------------------------------------
 

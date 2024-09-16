@@ -1,5 +1,5 @@
 ------------------------------------------------------------------------------
--- Formalizing Pick's Theorem... and learning LEAN along the way!
+-- Formalizing Pick's Theorem... and learning LEAN along the way.
 -- Integer polygons, their area and the number of enclosed lattice points
 ------------------------------------------------------------------------------
 
@@ -82,6 +82,7 @@ class Polygon where
   vert : Nat → Point
   cycl : ∀ i : Nat, vert i = vert (i+size)
 
+-- notation:50 p:50 "[" i:50 "]" => (vert p i)
 macro polygon:term "[" index:term "]" : term => `(($polygon).vert ($index))
 
 instance toPolygon (arr : Array Point) (h : arr.size > 0 := by decide) : Polygon where
@@ -199,6 +200,10 @@ def Polygon.wind (p : Polygon) (q : Point := ⟨0,0⟩) : Rat :=
 #eval diamond.wind ⟨0,0⟩ -- 1
 #eval diamond.wind ⟨1,0⟩ -- 0
 #eval diamond.wind ⟨1,1⟩ -- 0
+
+#eval eight.wind ⟨0,0⟩ -- 1
+#eval eight.wind ⟨1,0⟩ -- (1 : Rat)/4
+#eval eight.wind ⟨1,1⟩ -- (1 : Rat)/4
 
 ------------------------------------------------------------------------------
 -- calculate the number of enclosed lattice points, 'nelp' for short

@@ -1,7 +1,6 @@
-------------------------------------------------------------------------------
--- Formalizing Pick's Theorem... and learning LEAN along the way!
--- This file is just a playgound for testing some ideas
-------------------------------------------------------------------------------
+/-
+This file is just a playgound for testing some ideas
+-/
 
 import Mathlib
 
