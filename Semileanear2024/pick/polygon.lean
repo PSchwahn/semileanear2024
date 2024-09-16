@@ -18,8 +18,7 @@ infixr:70 " // " => Rat.fraction
 ------------------------------------------------------------------------------
 -- Rational points in the plane
 
-@[ext]
-structure Point where  -- structure or class?
+structure Point where  -- structure or class? also @[ext]?
   x : Rat              -- Rat or Int?
   y : Rat              -- Rat or Int?
   deriving Repr        -- enables #eval for debugging
@@ -77,7 +76,6 @@ def Point.isInteger (q: Point) : Bool := -- or Prop?
 -- A polygon p is a cyclic list of points p_1, ..., p_n = p_0
 -- We implement this as Nat → Point with some positive period
 
-@[ext]
 class Polygon where
   size : Nat
   ndeg : size > 0
@@ -116,6 +114,17 @@ def pl' := toPolygon #[p0, p1, p2, p3]
 #eval pl'.isInteger -- false
 
 ------------------------------------------------------------------------------
+-- We formalize the necessary properties for measuring areas and angles
+
+class AreaMeasure where
+  a : Point → Point → Rat -- Real?
+  -- add the necessary properties here
+
+class AngleMeasure where
+  a : Point → Point → Rat -- Real?
+  -- add the necessary properties here
+
+------------------------------------------------------------------------------
 -- calculate the enclosed area
 
 def trapezoidArea (u v : Point) : Rat :=
@@ -128,13 +137,17 @@ def Polygon.area (p : Polygon) : Rat :=
 #eval pl'.area  -- (-31 : Rat)/2
 
 def square := toPolygon #[⟨ 1, 1⟩, ⟨-1, 1⟩, ⟨-1,-1⟩, ⟨ 1,-1⟩]
-#eval square.area
+#eval square.area  -- 4
 
 def diamond := toPolygon #[⟨ 1, 0⟩, ⟨ 0, 1⟩, ⟨-1, 0⟩, ⟨ 0,-1⟩]
-#eval diamond.area
+#eval diamond.area  -- 2
+
+def eight := toPolygon #[⟨ 1, 1⟩, ⟨-1, 1⟩, ⟨-1, 0⟩, ⟨ 1,-1⟩, ⟨ -1,-1⟩, ⟨ 1,0⟩]
+#eval eight.area  -- 2
 
 ------------------------------------------------------------------------------
--- calculate the winding number by counting axis crossings
+-- We use axis crossings as our angle measure.
+-- This has the advantage of being rational.
 
 def Rat.abs (x : ℚ) : ℚ :=
 if x < 0 then -x else x
@@ -159,6 +172,21 @@ def axisCrossing (u v : Point) : ℚ :=
 #eval axisCrossing p1 p2 -- 1/2
 #eval axisCrossing p2 p0 -- 0
 
+------------------------------------------------------------------------------
+-- The umlaufzahl of a polygon is the sum of all its turning angles.
+-- Please do not confuse 'turning number' and 'winding number' below.
+
+def Polygon.umlaufzahl (p : Polygon) : Rat :=
+  ∑ i ∈ range (p.size), axisCrossing (p[i+1] - p[i]) (p[i+2] - p[i+1])
+
+#eval square.umlaufzahl   -- 1
+#eval diamond.umlaufzahl  -- 1
+#eval eight.umlaufzahl    -- 0
+
+------------------------------------------------------------------------------
+-- We calculate the winding number by counting axis crossings
+-- Please do not confuse 'winding number' and 'turning number' above.
+
 def Polygon.wind (p : Polygon) (q : Point := ⟨0,0⟩) : Rat :=
   ∑ i ∈ range (p.size), axisCrossing (p[i] - q) (p[i+1] - q)
 
@@ -168,7 +196,6 @@ def Polygon.wind (p : Polygon) (q : Point := ⟨0,0⟩) : Rat :=
 #eval square.wind ⟨1,0⟩ -- (1 : Rat)/2
 #eval square.wind ⟨1,1⟩ -- (1 : Rat)/4
 
-def diamond := toPolygon #[⟨ 1, 0⟩, ⟨ 0, 1⟩, ⟨-1, 0⟩, ⟨ 0,-1⟩]
 #eval diamond.wind ⟨0,0⟩ -- 1
 #eval diamond.wind ⟨1,0⟩ -- 0
 #eval diamond.wind ⟨1,1⟩ -- 0
@@ -176,23 +203,18 @@ def diamond := toPolygon #[⟨ 1, 0⟩, ⟨ 0, 1⟩, ⟨-1, 0⟩, ⟨ 0,-1⟩]
 ------------------------------------------------------------------------------
 -- calculate the number of enclosed lattice points, 'nelp' for short
 
-open Finset Int
-
 def Polygon.box (p : Polygon): Int :=
   max ⌈ abs (p[0].x) ⌉ ⌈ abs (p[0].y) ⌉ -- FIXME
 
 def Polygon.nelp (p : Polygon): Rat := -- number of enclosed lattice points
-    let L := Icc (-100 : ℤ) (100 : ℤ) -- FIXME should be {-max,...,max}
+    let L := Icc (-100 : ℤ) (100 : ℤ) -- FIXME should be {-box,...,box}
     ∑ i ∈ L, ∑ j ∈ L, p.wind (⟨i,j⟩)
 
-#eval square.area
-#eval square.nelp
+#eval square.area  -- 4
+#eval square.nelp  -- 4
 
-#eval diamond.area
-#eval diamond.nelp
+#eval diamond.area  -- 2
+#eval diamond.nelp  -- 2
 
-------------------------------------------------------------------------------
--- Finally, we can state Pick's theorem
-
-theorem pick_area : ∀ p : Polygon, p.isInteger → p.area = p.nelp := by
-  sorry
+#eval eight.area  -- 2
+#eval eight.nelp  -- 2

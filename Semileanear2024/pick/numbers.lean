@@ -1,14 +1,9 @@
 ------------------------------------------------------------------------------
 -- Formalizing Pick's Theorem... and learning LEAN along the way!
--- This is just a playgound for testing some ideas
+-- This file is just a playgound for testing some ideas
 ------------------------------------------------------------------------------
 
 import Mathlib
--- import Mathlib.Data.Nat.Basic
--- import Mathlib.Data.Int.Basic
--- import Mathlib.Data.Rat.Basic
--- import Mathlib.Data.Real.Basic
--- import Mathlib.Data.Complex.Basic
 
 ------------------------------------------------------------------------------
 -- The number system, without inclusion, needs cast
@@ -80,9 +75,9 @@ def y := (1:ℚ)*4/6
 -- Cast ℤ to ℚ, conversely check whether a:ℚ is an integer by a.den = 1
 
 def Rat.fraction (a b : Int) := (a:ℚ)/(b:ℚ)
-infixr:70 " /: " => Rat.fraction
+infixr:70 " ℚ/ " => Rat.fraction
 
-def z := 15/:3
+def z := 15 ℚ/ 3
 #check z     -- ℚ
 #eval z      -- 5
 #eval z.num  -- 5
